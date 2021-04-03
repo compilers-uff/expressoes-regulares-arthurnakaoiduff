@@ -19,6 +19,4 @@ for i in range(len(ers)):
 
 for er in ers:
   er1 = Er.getEr(er)
-  print(er)
-  print(er1.queue)
-  print(er1.transformAfne(er1.queue.pop(0)))
+  print(er1.equivalentAfne(er1.queue.pop(0)).equivalentAfn())
