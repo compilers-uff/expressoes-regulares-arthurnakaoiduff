@@ -4,15 +4,15 @@ class Er:
   def __init__(self, queue):
     self.queue = queue
 
-  def transformAfne(self, value):
+  def equivalentAfne(self, value):
     if value == "*":
-      return Afne.getSuccessiveConcatenationAfne(self.transformAfne(self.queue.pop(0)))
+      return Afne.getSuccessiveConcatenationAfne(self.equivalentAfne(self.queue.pop(0)))
       
     elif value == ".":
-      return Afne.getConcatenationAfne(self.transformAfne(self.queue.pop(0)), self.transformAfne(self.queue.pop(0)))
+      return Afne.getConcatenationAfne(self.equivalentAfne(self.queue.pop(0)), self.equivalentAfne(self.queue.pop(0)))
 
     elif value == "+":
-      return Afne.getUnionAfne(self.transformAfne(self.queue.pop(0)), self.transformAfne(self.queue.pop(0)))
+      return Afne.getUnionAfne(self.equivalentAfne(self.queue.pop(0)), self.equivalentAfne(self.queue.pop(0)))
 
     else:
       return Afne.getSimpleAfne(value)
