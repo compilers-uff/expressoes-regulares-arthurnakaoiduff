@@ -252,18 +252,20 @@ class Afne:
     for state in self.transictionFunctions.keys():
       transictionFunctions[state] = []
       for transiction in self.transictionFunctions[state]:
-        states = self.sigmaExtended([state], [transiction[0]])
         if transiction[0] == "EPSILON":
           for letter in self.alphabet:
-            alreadyExistsTransiction = isThereTransiction(transictionFunctions[state], letter)
-            if alreadyExistsTransiction[0]:
-              transictionFunctions[state][alreadyExistsTransiction[1]] = (transictionFunctions[state][alreadyExistsTransiction[1]][0], set(transictionFunctions[state][alreadyExistsTransiction[1]][1] + states))
-            else:
-              transictionFunctions[state].append((letter, states))
+            states = self.sigmaExtended([state], [letter])
+            if len(states) > 0: # Só adiciona se tiver algum estado no sigma extendido
+              alreadyExistsTransiction = isThereTransiction(transictionFunctions[state], letter)
+              if alreadyExistsTransiction[0]:
+                transictionFunctions[state][alreadyExistsTransiction[1]] = (transictionFunctions[state][alreadyExistsTransiction[1]][0], set(transictionFunctions[state][alreadyExistsTransiction[1]][1] + states))
+              else:
+                transictionFunctions[state].append((letter, states))
         else:
+          states = self.sigmaExtended([state], [transiction[0]])
           alreadyExistsTransiction = isThereTransiction(transictionFunctions[state], transiction[0])
           if alreadyExistsTransiction[0]:
-            transictionFunctions[state][alreadyExistsTransiction[1]] = (transiction[0], states)
+            transictionFunctions[state][alreadyExistsTransiction[1]] = (transiction[0], states + transictionFunctions[state][alreadyExistsTransiction[1]][1])
           else:
             transictionFunctions[state].append((transiction[0], states))
 
