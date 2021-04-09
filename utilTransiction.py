@@ -37,18 +37,6 @@ def compareTransictions(transictions1, transictions2):
 
   return True
 
-def compareTransictionsAfd(transictions1, transictions2):
-  def transictionInTransictions(transiction, transictions):
-    bool = False
-
-    for t in transictions:
-      if t[0] == transiction[0]:
-        bool = True
-        if t[1] != transiction[1]:
-          return False
-    
-    return bool
-
   for state in transictions1.keys():
     for transiction1 in transictions1[state]:
       if state in transictions2:

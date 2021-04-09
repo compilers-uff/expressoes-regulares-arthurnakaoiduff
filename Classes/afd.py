@@ -31,9 +31,9 @@ class Afd:
       string += state + "\n    "
       for transiction in self.transictionFunctions[state]:
         if transiction != self.transictionFunctions[state][-1]:
-          string += transiction[0] + " -> " + transiction[1] + "\n    "
+          string += transiction[0] + " -> " + str(transiction[1]) + "\n    "
         else:
-          string += transiction[0] + " -> " + transiction[1] + "\n"
+          string += transiction[0] + " -> " + str(transiction[1]) + "\n"
     
     return string
 
@@ -44,7 +44,7 @@ class Afd:
     if not equivalentLists(self.states, afd.states):
       return False
 
-    if not compareTransictionsAfd(self.transictionFunctions, afd.transictionFunctions):
+    if not compareTransictions(self.transictionFunctions, afd.transictionFunctions):
       return False
 
     if self.initialState != afd.initialState:
@@ -92,9 +92,9 @@ class Afd:
             transiction2 = self.transictionFunctions[state2][isThereTransiction2[1]]
             
             #Condicoes
-            if transiction1[1] != transiction2[1]: # Se os estados alvos das transicoes sao diferentes, entao...
-              if getMatrixElement(matrix, transiction1[1], transiction2[1]) == False: # Se o par de transicoes nao estao marcados...
-                appendMatrixElement(matrixList, transiction1[1], transiction2[1], (state1, state2))
+            if transiction1[1][0] != transiction2[1][0]: # Se os estados alvos das transicoes sao diferentes, entao...
+              if getMatrixElement(matrix, transiction1[1][0], transiction2[1][0]) == False: # Se o par de transicoes nao estao marcados...
+                appendMatrixElement(matrixList, transiction1[1][0], transiction2[1][0], (state1, state2))
               else: # Se as transicoes estao marcadas, entao deve-se marcar os estados em questao, pois nao sao equivalentes
                 setMatrixElement(matrix, state1, state2, True)
                 
@@ -126,7 +126,7 @@ class Afd:
 
           # Para toda transicao que tenha os estados substituidos como "alvo", substituir para o novo nome do estado
           for state in self.transictionFunctions.keys():
-            self.transictionFunctions[state] = [(transiction1, newNameState) if transiction2 == self.states[i] or transiction2 == self.states[j] else (transiction1, transiction2) for transiction1, transiction2 in self.transictionFunctions[state]]
+            self.transictionFunctions[state] = [(transiction1, [newNameState]) if transiction2[0] == self.states[i] or transiction2[0] == self.states[j] else (transiction1, transiction2) for transiction1, transiction2 in self.transictionFunctions[state]]
 
           # Adicionando elementos para serem apagados depois...
           changeElements.append((self.states[i], self.states[j], newNameState))
@@ -171,14 +171,14 @@ class Afd:
           break
 
         for transiction in self.transictionFunctions[stateVisiting]:
-          if transiction[1] in self.finalStates:
+          if transiction[1][0] in self.finalStates:
             if state not in statesNotUseless:
               statesNotUseless.append(state) 
             isUseless = False
             break
           else:
-            if transiction[1] not in queue and transiction[1] not in queueAlreadyVisited:
-              queue.append(transiction[1])
+            if transiction[1][0] not in queue and transiction[1][0] not in queueAlreadyVisited:
+              queue.append(transiction[1][0])
     
     uselessStates = [state for state in self.states if state not in statesNotUseless]
 
@@ -190,7 +190,7 @@ class Afd:
 
     for state in list(self.transictionFunctions)[:]:
       for transiction in self.transictionFunctions[state][:]:
-        if transiction[1] in uselessStates:
+        if transiction[1][0] in uselessStates:
           self.transictionFunctions[state].remove(transiction)
           if len(self.transictionFunctions[state]) == 0:
             del self.transictionFunctions[state]
@@ -208,8 +208,8 @@ class Afd:
 
       if state in self.transictionFunctions.keys():
         for transiction in self.transictionFunctions[state]:
-          if transiction[1] not in queue and transiction[1] not in queueAlreadyVisited:
-            queue.append(transiction[1])
+          if transiction[1][0] not in queue and transiction[1][0] not in queueAlreadyVisited:
+            queue.append(transiction[1][0])
     
     inaccessibleStates = [state for state in self.states if state not in queueAlreadyVisited]
     
@@ -219,11 +219,11 @@ class Afd:
         del self.transictionFunctions[state]
       else: # Se a funcao de transicao visitada NAO eh inacessivel, deve-se percorrer se ela tem alguma transicao para outro estado inacessivel
         for transiction in self.transictionFunctions[state][:]: # Para cada transicao no estado
-          if transiction[1] in inaccessibleStates: # Se o estado da transicao eh inacessivel
+          if transiction[1][0] in inaccessibleStates: # Se o estado da transicao eh inacessivel
             if len(self.transictionFunctions[state]) == 1:
               del self.transictionFunctions[state]
             else:
-              self.transictionFunctions[state].remove((transiction[0], transiction[1]))
+              self.transictionFunctions[state].remove(transiction)
 
 
     # Apagando os estados inacessiveis dos estados
@@ -243,12 +243,12 @@ class Afd:
       if state in self.transictionFunctions.keys():
         for letter in self.alphabet:
           if not isThereTransiction(self.transictionFunctions[state], letter)[0]:
-            self.transictionFunctions[state].append((letter, "d"))
+            self.transictionFunctions[state].append((letter, ["d"]))
       else:
-        self.transictionFunctions[state] = [(letter, "d") for letter in self.alphabet]
+        self.transictionFunctions[state] = [(letter, ["d"]) for letter in self.alphabet]
 
     # Para todas as letras do alfabeto, gerar uma transicao para o proprio "d"
-    self.transictionFunctions["d"] = [(letter, "d") for letter in self.alphabet]
+    self.transictionFunctions["d"] = [(letter, ["d"]) for letter in self.alphabet]
 
     return self
 
@@ -262,7 +262,7 @@ class Afd:
       if state in self.transictionFunctions.keys():
         itTransiction = isThereTransiction(self.transictionFunctions[state], letter)
         if itTransiction[0]:
-          state = self.transictionFunctions[state][itTransiction[1]][1]
+          state = self.transictionFunctions[state][itTransiction[1]][1][0]
         else:
           state = None
       else:

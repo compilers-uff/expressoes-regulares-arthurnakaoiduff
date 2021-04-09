@@ -77,9 +77,9 @@ class Afn:
         
         if (len(newStateArray) != 0):
           if "".join(sorted(statesAfd)) in transictionFunctions.keys():
-            transictionFunctions["".join(sorted(statesAfd))].append((letter, "".join(sorted(newStateArray))))
+            transictionFunctions["".join(sorted(statesAfd))].append((letter, ["".join(sorted(newStateArray))]))
           else:
-            transictionFunctions["".join(sorted(statesAfd))] = [(letter, "".join(sorted(newStateArray)))]
+            transictionFunctions["".join(sorted(statesAfd))] = [(letter, ["".join(sorted(newStateArray))])]
           
         if newStateArray not in queueAlreadyProcessed and newStateArray not in queue:
           queue.append(newStateArray) 
