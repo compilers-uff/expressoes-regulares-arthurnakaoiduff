@@ -171,7 +171,7 @@ class Afd:
           break
 
         for transiction in self.transictionFunctions[stateVisiting]:
-          if transiction[1][0] in self.finalStates:
+          if transiction[1][0] in self.finalStates or transiction[1][0] in statesNotUseless:
             if state not in statesNotUseless:
               statesNotUseless.append(state) 
             isUseless = False
@@ -211,15 +211,13 @@ class Afd:
           if transiction[1][0] not in queue and transiction[1][0] not in queueAlreadyVisited:
             queue.append(transiction[1][0])
     
-    inaccessibleStates = [state for state in self.states if state not in queueAlreadyVisited]
-    
     # Apagando os estados inacessiveis das funcoes de transicao
     for state in list(self.transictionFunctions): # Para cada estado que esteja nas funcoes de transicao
-      if state in inaccessibleStates: # Se a funcao de transicao visitada eh inacessivel
+      if state not in queueAlreadyVisited: # Se a funcao de transicao visitada eh inacessivel
         del self.transictionFunctions[state]
       else: # Se a funcao de transicao visitada NAO eh inacessivel, deve-se percorrer se ela tem alguma transicao para outro estado inacessivel
         for transiction in self.transictionFunctions[state][:]: # Para cada transicao no estado
-          if transiction[1][0] in inaccessibleStates: # Se o estado da transicao eh inacessivel
+          if transiction[1][0] not in queueAlreadyVisited: # Se o estado da transicao eh inacessivel
             if len(self.transictionFunctions[state]) == 1:
               del self.transictionFunctions[state]
             else:
@@ -227,10 +225,10 @@ class Afd:
 
 
     # Apagando os estados inacessiveis dos estados
-    self.states = [state for state in self.states if state not in inaccessibleStates]
+    self.states = queueAlreadyVisited
 
     # Apagando os estados inacessiveis dos estados finais
-    self.finalStates = [finalState for finalState in self.finalStates if finalState not in inaccessibleStates]
+    self.finalStates = [finalState for finalState in self.finalStates if finalState in queueAlreadyVisited]
 
     return self
   

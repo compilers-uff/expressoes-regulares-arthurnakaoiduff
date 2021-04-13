@@ -249,7 +249,7 @@ class Afne:
         finalStates.append(state)
 
     transictionFunctions = {}
-    for state in self.transictionFunctions.keys():
+    for state in list(self.transictionFunctions)[:]:
       transictionFunctions[state] = []
       for transiction in self.transictionFunctions[state]:
         if transiction[0] == "EPSILON":
@@ -261,6 +261,9 @@ class Afne:
                 transictionFunctions[state][alreadyExistsTransiction[1]] = (transictionFunctions[state][alreadyExistsTransiction[1]][0], set(transictionFunctions[state][alreadyExistsTransiction[1]][1] + states))
               else:
                 transictionFunctions[state].append((letter, states))
+          else:
+            if len(transictionFunctions[state]) == 0:
+              del transictionFunctions[state]
         else:
           states = self.sigmaExtended([state], [transiction[0]])
           alreadyExistsTransiction = isThereTransiction(transictionFunctions[state], transiction[0])
