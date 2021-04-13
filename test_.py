@@ -1,17 +1,5 @@
 from Classes.er import *
-
-def erToAFNe(er):
-  erInstance = Er.getEr(er)
-  return erInstance.equivalentAfne(erInstance.queue.pop(0))
-
-def afneToAFN(Afne):
-  return Afne.equivalentAfn()
-
-def afnToAFD(Afn):
-  return Afn.equivalentAfd()
-
-def afdToAFDmin(Afd):
-  return Afd.minimize()
+from mainFunctions import *
 
 class Test:
   def test_concatenation_true_one(self):
@@ -93,7 +81,82 @@ class Test:
     er = "a"
     word = "b"
 
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+
     boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
     templateBoolean = False
+
+    assert boolean == templateBoolean
+
+  def test_complex_true_one(self):
+    er = "+(*(.(a, b)), .(d, +(a, c)))"
+    word = "da"
+
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+
+    boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
+    templateBoolean = True
+
+    assert boolean == templateBoolean
+
+  def test_complex_true_two(self):
+    er = ".(*(.(a, b)), c)"
+    word = "abababc"
+
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+
+    boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
+    templateBoolean = True
+
+    assert boolean == templateBoolean
+
+  def test_complex_true_three(self):
+    er = ".(*(.(a, b)), +(c, d))"
+    word = "abababd"
+
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+
+    boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
+    templateBoolean = True
+
+    assert boolean == templateBoolean
+
+  def test_complex_true_four(self):
+    er = ".(*(.(a, b)), +(*(c), d))"
+    word = "abababcccc"
+
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+
+    boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
+    templateBoolean = True
+
+    assert boolean == templateBoolean
+
+  def test_complex_true_five(self):
+    er = ".(*(.(a, b)), +(*(.(c, d)), .(e, f)))"
+    word = "abababcdcd"
+
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+
+    boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
+    templateBoolean = True
+
+    assert boolean == templateBoolean
+
+  def test_complex_true_six(self):
+    er = ".(*(.(a, b)), .(d, +(a, c)))"
+    word = "abababda"
+
+    er = er.replace(" ", "") # Retirando os espaços vazios
+    er = er.replace("\n", "") # Retirando as quebras de linha
+    
+    boolean = afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word)
+    templateBoolean = True
 
     assert boolean == templateBoolean
