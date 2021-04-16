@@ -2,6 +2,30 @@ from Classes.er import *
 from mainFunctions import *
 
 class Test:
+  def test_enunciated_one(self):
+    assert match('a', 'a')
+
+  def test_enunciated_two(self):
+    assert match('+(a, b)', 'a')
+
+  def test_enunciated_three(self):
+    assert match('.(a, b)', 'ab')
+
+  def test_enunciated_four(self):
+    assert match('*(+(a, b)', 'a') 
+
+  def test_enunciated_five(self):
+    assert match('*(+(a, b)', 'aaa')
+
+  def test_enunciated_six(self):
+    assert match('*(+(a, b)', 'ab')
+
+  def test_enunciated_seven(self):
+    assert match('*(+(a, b)', 'aba')
+
+  def test_enunciated_eight(self):
+    assert match('*(+(a, b)', 'abababa')
+
   def test_concatenation_true_one(self):
     assert match(".(.(.(a, b), c), d)", "abcd")
 

@@ -17,7 +17,7 @@ for i in range(len(ers)):
   ers[i] = ers[i].replace("\n", "") # Retirando as quebras de linha
 
 for er in ers:
-  if afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er)))).accepted(word):
+  if match(er, word):
     print("match(", er, ", '", word, "') == OK", sep="") 
   else: 
     print("match(", er, ", '", word, "') == Not OK", sep="") 
