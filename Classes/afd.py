@@ -115,42 +115,65 @@ class Afd:
             # Se as transicoes sao iguais, entao eles sao equivalentes e nao devem ser marcados
 
     # Unificacao dos estados equivalentes
-    changeElements = []
-    for i in range(1, len(self.states)):
-      for j in range(0, i):
-        if getMatrixElement(matrix, self.states[i], self.states[j]) == False:
-          newNameState = self.states[i] + self.states[j]
+    
+    # Descobrindo todos os fechos antes de modificar o AFD...
+    fechos = {}
+    for state in self.states:
+      fechos[state] = getFecho(matrix, self.states, state)
 
-          self.transictionFunctions[newNameState] = self.transictionFunctions[self.states[i]] # Adicionando nova transicao com o novo estado
+    statesA = self.states.copy()
+    alreadyVisited = []
+    for state in statesA:
+      # Se o estado ainda nao foi visitado...
+      if state not in alreadyVisited:
+        fecho = fechos[state]
+
+        # Se ele é equivalente a mais de um estado
+        if len(fecho) > 1:
+          newNameState = ""
+          for stateFecho in fecho:
+            newNameState += stateFecho
+          
+          self.transictionFunctions[newNameState] = self.transictionFunctions[fecho[0]] # Adicionando nova transicao com o novo estado
           self.states.append(newNameState) # Adicionando o novo estado aos estados
 
           # Para toda transicao que tenha os estados substituidos como "alvo", substituir para o novo nome do estado
-          for state in self.transictionFunctions.keys():
-            self.transictionFunctions[state] = [(transiction1, [newNameState]) if transiction2[0] == self.states[i] or transiction2[0] == self.states[j] else (transiction1, transiction2) for transiction1, transiction2 in self.transictionFunctions[state]]
+          for stateTransiction in self.transictionFunctions.keys():
+            for stateFecho in fecho:
+              self.transictionFunctions[stateTransiction] = [(transiction1, [newNameState]) if transiction2[0] == stateFecho else (transiction1, transiction2) for transiction1, transiction2 in self.transictionFunctions[stateTransiction]]
 
           # Adicionando elementos para serem apagados depois...
-          changeElements.append((self.states[i], self.states[j], newNameState))
+          changeElements = []
+          for stateFecho in fecho:
+            alreadyVisited.append(stateFecho) # Adicionando pra saber que eu ja adicionei...
+            changeElements.append(stateFecho)
 
-          if self.states[i] in self.finalStates and self.states[j] in self.finalStates: # Se os estados são finais
+          final_state = True
+          for stateFecho in fecho:
+            if stateFecho not in self.finalStates: # Se os estados são finais
+              final_state = False
+              break
+
+          if final_state:
             self.finalStates.append(newNameState)
 
-          if self.initialState == self.states[i] or self.initialState == self.states[j]: # Se algum dos estados é inicial
-            self.initialState = newNameState
+          initial_state = False
+          for stateFecho in fecho:
+            if self.initialState == stateFecho: # Se algum dos estados é inicial
+              self.initialState = newNameState
+              break
 
-    for element in changeElements:
-      if element[0] in self.transictionFunctions.keys(): 
-        del self.transictionFunctions[element[0]] 
-      if element[1] in self.transictionFunctions.keys():
-        del self.transictionFunctions[element[1]] 
-      if element[0] in self.states:
-        self.states.remove(element[0]) 
-      if element[1] in self.states:
-        self.states.remove(element[1]) 
-      if element[0] in self.finalStates:
-        self.finalStates.remove(element[0]) 
-      if element[1] in self.finalStates:
-        self.finalStates.remove(element[1]) 
-    
+          # Apagando os estados equivalentes para deixar somente um
+          for element in changeElements:
+            if element in self.transictionFunctions.keys(): 
+              del self.transictionFunctions[element] 
+            if element in self.states:
+              self.states.remove(element) 
+            if element in self.finalStates:
+              self.finalStates.remove(element) 
+        else:
+          alreadyVisited.append(fecho[0])
+   
     # Descobrindo estados inuteis
     statesNotUseless = []
 
