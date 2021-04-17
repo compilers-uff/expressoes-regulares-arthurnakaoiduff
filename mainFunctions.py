@@ -16,4 +16,5 @@ def afdToAFDmin(Afd):
 def match(er, w):
   er_treatted = er.replace(" ", "") # Retirando os espaços vazios
   er_treatted = er_treatted.replace("\n", "") # Retirando as quebras de linha
+  er_treatted = er_treatted.replace("'", "") # Retirando as aspas simples
   return afdToAFDmin(afnToAFD(afneToAFN(erToAFNe(er_treatted)))).accepted(w)

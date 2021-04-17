@@ -1,6 +1,11 @@
 import sys
 from mainFunctions import *
 
+'''
+Para o algoritmo funcionar, ele limpa as quebras de linha,
+espaços em branco e aspas simples.
+'''
+
 if(sys.argv[1] == "-f"):
   filename = sys.argv[2]
   file = open(filename, 'r')
